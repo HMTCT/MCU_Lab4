@@ -10,7 +10,7 @@
 
 
 #include <stdint.h>
-
+extern int counter;
 
 typedef struct{
 	void (*pTask)(void);

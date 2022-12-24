@@ -8,11 +8,12 @@
 #include "scheduler.h"
 #include "queue.h"
 
-#define	QUEUE	1	//change this to 0 if using array structure
+#define	QUEUE	0	//change this to 0 if using array structure
 
 sTasks SCH_tasks_G[SCH_MAX_TASKS];
 uint8_t current_index_task = 0;
 struct Queue* q = NULL;
+int counter = 0;
 
 void SCH_Init(void){
 	current_index_task = 0;
@@ -61,12 +62,14 @@ void SCH_Update(void){
 	if (q->size == 0)
 		return;
 
-	if (q->front->key.Delay){
+	if (q->front->key.Delay > 0){
 		q->front->key.Delay--;
+		q->total_delay--;
 	}
 
-	if (q->front->key.Delay <= 0){
-		q->front->key.RunMe+=1;
+	if (q->front->key.Delay == 0){
+		q->front->key.Delay = q->front->key.Period;
+		q->front->key.RunMe += 1;
 	}
 }
 
@@ -84,14 +87,14 @@ void SCH_Dispatch_Tasks(void){
 	if (q->size == 0)
 		return;
 
-	while (q->front->key.RunMe){
-		(*q->front->key.pTask)();
+	if (q->front->key.RunMe > 0){
 		sTasks task = q->front->key;
-		task.Delay = task.Period;
-		task.RunMe = 0;
-
 		deQueue(q);
-		if (task.Period)
+
+		task.RunMe--;
+		(*task.pTask)();
+
+		if (task.Period > 0)
 			enQueue(q, task);
 	}
 }

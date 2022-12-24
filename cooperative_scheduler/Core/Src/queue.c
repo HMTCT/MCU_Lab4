@@ -29,24 +29,21 @@ struct Queue* createQueue(){
 void enQueue(struct Queue* q, sTasks k){
     // Create a new LL node
     struct QNode* temp = newNode(k);
-    q->size++;
-    q->total_delay+=1;
+    q->size += 1;
+
     // If queue is empty, then new node is front and rear
     // both
     if (q->front == NULL) {
-        q->front = q->rear = temp;
-        q->total_delay = temp->key.Delay;
+    	q->front = q->rear = temp;
+    	q->total_delay = temp->key.Delay;
         return;
     }
 
     if (temp->key.Delay >= q->total_delay){
     	//Insert at the end of queue
+    	int tmp = temp->key.Delay;
     	temp->key.Delay -= q->total_delay;
-
-    	if (temp->key.Delay == 0)
-    		temp->key.RunMe+=1;
-
-    	q->total_delay += temp->key.Delay;
+    	q->total_delay = tmp;
 		q->rear->next = temp;
 		q->rear = temp;
 		return;
@@ -71,22 +68,13 @@ void enQueue(struct Queue* q, sTasks k){
     			temp->next = it;
     		}
 
-    		if (it->key.Delay == temp->key.Delay){
-    			it->key.Delay = 0;
-    			it->key.RunMe++;
-    			return;
-    		}
-
-    		//Update delay time of remaining node
+    		//Update delay time of node behind temp
     		it->key.Delay -= temp->key.Delay;
-    		while (it){
-    			it->key.Delay -= 1;
-    			it = it->next;
-    		}
+
     		return;
     	}
 
-    	temp->key.Delay -= it->key.Delay + 1;
+    	temp->key.Delay -= it->key.Delay;
     	prev = it;
     	it = it->next;
     }
@@ -99,12 +87,11 @@ void deQueue(struct Queue* q){
     if (q->front == NULL)
         return;
 
-    q->size--;
+    q->size -= 1;
 
     // Store previous front and move front one node ahead
     struct QNode* temp = q->front;
     q->front = q->front->next;
-    q->total_delay -= 1;
 
     // If front becomes NULL, then change rear also as NULL
     if (q->front == NULL)

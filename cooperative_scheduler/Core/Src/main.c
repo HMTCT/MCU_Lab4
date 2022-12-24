@@ -61,7 +61,6 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 char str[50];
-int counter = 0;
 
 void ledtest1(){
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
